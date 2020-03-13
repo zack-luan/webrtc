@@ -92,3 +92,18 @@ a=sctpmap:5000 webrtc-datachannel 1024
 	assertCodecWithPayloadType(H264, 115)
 	assertCodecWithPayloadType(VP9, 135)
 }
+
+// pion/webrtc#1078
+func TestOpusCase(t *testing.T) {
+	pc, err := NewPeerConnection(Configuration{})
+	assert.NoError(t, err)
+
+	_, err = pc.AddTransceiverFromKind(RTPCodecTypeAudio)
+	assert.NoError(t, err)
+
+	offer, err := pc.CreateOffer(nil)
+	assert.NoError(t, err)
+
+	assert.Contains(t, offer.SDP, "opus/48000")
+	assert.NoError(t, pc.Close())
+}
